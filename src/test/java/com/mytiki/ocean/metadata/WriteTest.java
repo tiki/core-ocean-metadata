@@ -11,6 +11,7 @@ import com.mytiki.ocean.common.Iceberg;
 import com.mytiki.ocean.metadata.mock.MockEvent;
 import com.mytiki.ocean.metadata.mock.MockIceberg;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -35,5 +36,17 @@ public class WriteTest {
         WriteHandler handler = new WriteHandler(mockIceberg.iceberg());
         SQSBatchResponse response = handler.handleRequest(event, null);
         assertEquals(0, response.getBatchItemFailures().size());
+    }
+
+    @Test
+    @Ignore
+    public void HandleRequest_Batch_FailSome() {
+        //TODO
+    }
+
+    @Test
+    @Ignore
+    public void HandleRequest_Batch_FailAll() {
+        //TODO
     }
 }
