@@ -28,6 +28,7 @@ Resources:
     Properties:
       QueueName: ocean-catalog.fifo
       ContentBasedDeduplication: true
+      DeduplicationScope: messageGroup
       FifoQueue: true
 
 Outputs:
