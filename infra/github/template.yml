@@ -12,31 +12,19 @@ Parameters:
     Default: "GitHubDeployOceanMetadata"
 
 Resources:
-  GHRole:
+  Role:
     Type: AWS::Serverless::Application
     Properties:
-      Location: gh-role.yml
+      Location: role.yml
       Parameters:
         GitHubOrg: tiki-bar
         RepositoryName: tiki-ocean-metadata
         RoleName: !Ref RoleName
 
-  GHPolicy:
+  Policy:
     Type: AWS::Serverless::Application
     Properties:
-      Location: gh-policy.yml
+      Location: policy.yml
       Parameters:
         BucketName: !Ref SAMBucket
         RoleName: !Ref RoleName
-
-  Queue:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: queue.yml
-
-  Function:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: function.yml
-      Parameters:
-        QueueArn: !GetAtt [Queue, Outputs.Arn]

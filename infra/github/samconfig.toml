@@ -7,7 +7,7 @@ s3_prefix = "ocean/metadata"
 region = "us-east-2"
 
 [default.deploy.parameters]
-confirm_changeset = true
+confirm_changeset = false
 capabilities = [
     "CAPABILITY_IAM",
     "CAPABILITY_NAMED_IAM",
