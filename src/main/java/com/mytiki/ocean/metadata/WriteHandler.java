@@ -42,7 +42,7 @@ public class WriteHandler implements RequestHandler<SQSEvent, SQSBatchResponse> 
                 ReqBody req = mapper.readValue(ev.getBody(), ReqBody.class);
                 append.appendFile(DataFiles.builder(spec)
                         .withPath(req.getUri())
-                        .withFormat(FileFormat.AVRO)
+                        .withFormat(FileFormat.PARQUET)
                         .withFileSizeInBytes(req.getSize())
                         .withRecordCount(req.getCount())
                         .build());
