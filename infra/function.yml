@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Ocean-Metadata Lambda Function
+
+Parameters:
+  QueueArn:
+    Description: Arn for the SQSEvent Queue
+    Type: String
+
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ..
+      Handler: com.mytiki.ocean.metadata.App::handleRequest
+      Runtime: java17
+      Architectures:
+        - arm64
+      MemorySize: 512
+      Timeout: 20
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Enabled: true
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            BatchSize: 10
+            Queue: !Ref QueueArn
+
+Outputs:
+  Arn:
+    Value: !GetAtt Function.Arn

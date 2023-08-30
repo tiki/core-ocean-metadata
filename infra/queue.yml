@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Ocean-Metadata SQS Queue
+
+Resources:
+  Queue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ocean-catalog.fifo
+      ContentBasedDeduplication: true
+      DeduplicationScope: messageGroup
+      FifoQueue: true
+
+Outputs:
+  Arn:
+    Value: !GetAtt Queue.Arn

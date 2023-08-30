@@ -1,41 +1,42 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Ocean - Catalog Infrastructure
+Description: Ocean - Metadata Infrastructure
+
+Parameters:
+  SAMBucket:
+    Description: Name of the S3 Bucket for the deployment assets
+    Type: String
+  RoleName:
+    Description: Name of the IAM Role for the deployment
+    Type: String
+    Default: "GitHubDeployOceanMetadata"
 
 Resources:
-  Function:
-    Type: AWS::Serverless::Function
+  GHRole:
+    Type: AWS::Serverless::Application
     Properties:
-      CodeUri: ..
-      Handler: com.mytiki.ocean.App::handleRequest
-      Runtime: java17
-      Architectures:
-        - arm64
-      MemorySize: 512
-      Timeout: 20
-      Events:
-        SQSEvent:
-          Type: SQS
-          Properties:
-            Enabled: true
-            FunctionResponseTypes:
-              - ReportBatchItemFailures
-            BatchSize: 10
-            Queue: !GetAtt Queue.Arn
+      Location: gh-role.yml
+      Parameters:
+        GitHubOrg: tiki-bar
+        RepositoryName: tiki-ocean-metadata
+        RoleName: !Ref RoleName
+
+  GHPolicy:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: gh-policy.yml
+      Parameters:
+        BucketName: !Ref SAMBucket
+        RoleName: !Ref RoleName
 
   Queue:
-    Type: AWS::SQS::Queue
+    Type: AWS::Serverless::Application
     Properties:
-      QueueName: ocean-catalog.fifo
-      ContentBasedDeduplication: true
-      DeduplicationScope: messageGroup
-      FifoQueue: true
+      Location: queue.yml
 
-Outputs:
   Function:
-    Description: "ARN"
-    Value: !GetAtt Function.Arn
-
-  Queue:
-    Description: "ARN"
-    Value: !GetAtt Queue.Arn
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: function.yml
+      Parameters:
+        QueueArn: !GetAtt [Queue, Outputs.Arn]
