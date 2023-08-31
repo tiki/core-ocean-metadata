@@ -1,13 +1,18 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Ocean - Catalog Infrastructure
+Description: Ocean-Metadata Lambda Function
+
+Parameters:
+  QueueArn:
+    Description: Arn for the SQSEvent Queue
+    Type: String
 
 Resources:
   Function:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ..
-      Handler: com.mytiki.ocean.App::handleRequest
+      CodeUri: ../..
+      Handler: com.mytiki.ocean.metadata.App::handleRequest
       Runtime: java17
       Architectures:
         - arm64
@@ -21,21 +26,8 @@ Resources:
             FunctionResponseTypes:
               - ReportBatchItemFailures
             BatchSize: 10
-            Queue: !GetAtt Queue.Arn
-
-  Queue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: ocean-catalog.fifo
-      ContentBasedDeduplication: true
-      DeduplicationScope: messageGroup
-      FifoQueue: true
+            Queue: !Ref QueueArn
 
 Outputs:
-  Function:
-    Description: "ARN"
+  Arn:
     Value: !GetAtt Function.Arn
-
-  Queue:
-    Description: "ARN"
-    Value: !GetAtt Queue.Arn
