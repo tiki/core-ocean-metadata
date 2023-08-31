@@ -50,6 +50,8 @@ jobs:
           auto-capture: true
           output-file: iamlive-policy.json
 
+      - run: ./iamlive --background --sort-alphabetical --output-file iamlive-policy.json
+
       - name: SAM Deploy GitHub
         run: cd infra/github && sam build && sam package && sam deploy
 
@@ -60,14 +62,20 @@ jobs:
           role-session-name: ${{ env.SESSION_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: SAM Deploy GitHub
-        run: cd infra/github && sam build && sam package && sam deploy
+#      - name: SAM Deploy AWS
+#        run: cd infra/aws && sam build && sam package && sam deploy
 
       - name: Get Version
         id: version
         run: echo "current=$(xmlstarlet sel -t -m _:project -v _:version pom.xml)" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        uses: ncipollo/release-action@v1
+#      - name: Create Release
+#        uses: ncipollo/release-action@v1
+#        with:
+#          tag: ${{ steps.version.outputs.current }}
+
+      - if: ${{ always() }}
+        uses: actions/upload-artifact@v3
         with:
-          tag: ${{ steps.version.outputs.current }}
+          name: iamlive-policy.json
+          path: iamlive-policy.json
