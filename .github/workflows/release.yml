@@ -51,8 +51,6 @@ jobs:
           auto-capture: true
           output-file: iamlive-policy.json
 
-      - run: ./iamlive --background --sort-alphabetical --output-file iamlive-policy.json
-
       - name: SAM Deploy GitHub
         run: cd infra/github && sam build && sam package && sam deploy
 
