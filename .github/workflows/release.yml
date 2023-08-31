@@ -54,8 +54,12 @@ jobs:
           role-session-name: ${{ env.SESSION_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
-#      - name: SAM Deploy AWS
-#        run: cd infra/aws && sam build && sam package && sam deploy
+      - name: SAM Deploy AWS
+        run: |
+          cd infra/aws
+          sam build -t queue.yml
+          sam package -t queue.yml
+          sam deploy -t queue.yml
 
       - name: Get Version
         id: version
@@ -65,9 +69,3 @@ jobs:
 #        uses: ncipollo/release-action@v1
 #        with:
 #          tag: ${{ steps.version.outputs.current }}
-
-      - if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: iamlive-policy.json
-          path: iamlive-policy.json
