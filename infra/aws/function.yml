@@ -11,7 +11,7 @@ Resources:
   Function:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ..
+      CodeUri: ../..
       Handler: com.mytiki.ocean.metadata.App::handleRequest
       Runtime: java17
       Architectures:
