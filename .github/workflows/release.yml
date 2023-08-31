@@ -44,6 +44,12 @@ jobs:
           role-session-name: ${{ env.SESSION_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - uses: marcofranssen/setup-iamlive@v0.2.2
+        with:
+          iamlive-version: v0.53.0
+          auto-capture: true
+          output-file: iamlive-policy.json
+
       - name: SAM Deploy GitHub
         run: cd infra/github && sam build && sam package && sam deploy
 

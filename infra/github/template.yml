@@ -18,9 +18,9 @@ Resources:
         RepositoryName: tiki-ocean-metadata
         RoleName: !Ref RoleName
 
-#  Policy:
-#    Type: AWS::Serverless::Application
-#    Properties:
-#      Location: policy.yml
-#      Parameters:
-#        RoleName: !Ref RoleName
+  Policy:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: policy.yml
+      Parameters:
+        RoleName: !Ref RoleName
