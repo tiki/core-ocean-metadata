@@ -45,4 +45,5 @@ Resources:
           - Effect: Allow
             Action:
               - sqs:CreateQueue
+              - sqs:GetQueueAttributes
             Resource: "*"
