@@ -37,8 +37,6 @@ Resources:
               - lambda:CreateFunction
               - lambda:TagResource
               - lambda:GetFunction
-              - lambda:CreateFunctionUrlConfig
-              - lambda:GetFunctionUrlConfig
               - lambda:UpdateFunctionCode
               - lambda:ListTags
             Resource: "*"
