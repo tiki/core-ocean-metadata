@@ -23,5 +23,4 @@ Resources:
     Properties:
       Location: policy.yml
       Parameters:
-        BucketName: !Ref SAMBucket
         RoleName: !Ref RoleName
