@@ -3,9 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: GitHub OIDC Deployment Policy
 
 Parameters:
-  BucketName:
-    Description: Name of the S3 Bucket for the deployment assets
-    Type: String
   RoleName:
     Description: Name of the IAM Role for the inline policy
     Type: String
@@ -19,9 +16,6 @@ Resources:
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Effect: Allow
-            Action: cloudformation:*
-            Resource: "*"
           - Effect: Allow
             Action:
               - iam:CreateRole
@@ -38,12 +32,6 @@ Resources:
             Condition:
               StringEquals:
                 iam:PassedToService: lambda.amazonaws.com
-          - Effect: Allow
-            Action:
-              - s3:PutObject
-              - s3:GetObject
-              - s3:DeleteObject
-            Resource: !Sub arn:aws:s3:::${BucketName}/*
           - Effect: Allow
             Action:
               - lambda:CreateFunction

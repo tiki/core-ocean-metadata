@@ -3,9 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: Ocean - Metadata Infrastructure
 
 Parameters:
-  SAMBucket:
-    Description: Name of the S3 Bucket for the deployment assets
-    Type: String
   RoleName:
     Description: Name of the IAM Role for the deployment
     Type: String

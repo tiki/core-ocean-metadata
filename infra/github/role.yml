@@ -4,10 +4,10 @@ Description: GitHub OIDC Deployment Role
 
 Parameters:
   GitHubOrg:
-    Description: Name of GitHub organization/user (case sensitive)
+    Description: Name of GitHub organization/user (case sensitive).
     Type: String
   RepositoryName:
-    Description: Name of GitHub repository (case sensitive)
+    Description: Name of GitHub repository (case sensitive).
     Type: String
   OIDCProviderArn:
     Description: Arn for the GitHub OIDC Provider.
@@ -18,7 +18,11 @@ Parameters:
     Default: "sts.amazonaws.com"
     Type: String
   RoleName:
-    Description: Name for the IAM Role
+    Description: Name for the IAM Role.
+    Type: String
+  BasePolicy:
+    Description: ARN of the base deployment policy to extend.
+    Default: "arn:aws:iam::254962200554:policy/GitHubDeployBase"
     Type: String
 
 Conditions:
@@ -31,6 +35,8 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Ref RoleName
+      ManagedPolicyArns:
+        - !Ref BasePolicy
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
