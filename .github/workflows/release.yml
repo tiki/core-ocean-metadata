@@ -4,8 +4,8 @@ on:
   pull_request:
     branches:
       - main
-#    types:
-#      - closed
+    types:
+      - closed
 
 env:
   SESSION_NAME : "gh_action"
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   Deploy:
-#    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'release/')
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'release/')
     runs-on: ubuntu-latest
     environment: Production
     permissions:
@@ -44,12 +44,8 @@ jobs:
           role-session-name: ${{ env.SESSION_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: SAM Deploy GitHub Role
-        run: | 
-          cd infra/github
-          sam build -t role.yml
-          sam package -t role.yml
-          sam deploy -t role.yml --parameter-overrides GitHubOrg=tiki-bar RepositoryName=tiki-ocean-metadata RoleName=GitHubDeployOceanMetadata
+      - name: SAM Deploy GitHub
+        run: cd infra/github && sam build && sam package && sam deploy
 
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
