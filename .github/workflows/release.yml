@@ -54,9 +54,9 @@ jobs:
       - name: SAM Deploy GitHub
         run: |
           cd infra/github
-          sam build -t role.yml
-          sam package -t role.yml
-          sam deploy -t role.yml --parameter-overrides  GitHubOrg=tiki-bar RepositoryName=tiki-ocean-metadata RoleName=GitHubDeployOceanMetadata
+          sam build -t policy.yml
+          sam package -t policy.yml
+          sam deploy -t policy.yml --parameter-overrides  RoleName=GitHubDeployOceanMetadata
 
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
