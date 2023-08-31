@@ -42,3 +42,7 @@ Resources:
               - lambda:UpdateFunctionCode
               - lambda:ListTags
             Resource: "*"
+          - Effect: Allow
+            Action:
+              - sqs:CreateQueue
+            Resource: "*"
