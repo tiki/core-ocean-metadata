@@ -10,6 +10,7 @@ on:
 env:
   SESSION_NAME : "gh_action"
   AWS_REGION : "us-east-2"
+  AWS_CSM_ENABLED: 'true'
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
