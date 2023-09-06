@@ -2,11 +2,17 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Ocean-Metadata SQS Queue
 
+Parameters:
+  QueueName:
+    Type: String
+    Default: ocean-catalog
+    Description: The name of the FIFO Queue.
+
 Resources:
   Queue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: ocean-catalog.fifo
+      QueueName: !Sub "${QueueName}.fifo"
       ContentBasedDeduplication: true
       DeduplicationScope: messageGroup
       FifoQueue: true
