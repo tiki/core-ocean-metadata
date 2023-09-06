@@ -10,7 +10,7 @@ on:
 
 jobs:
   add-issue:
-    if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
+    if: ${{ github.event_name == 'issues' && github.event.action == 'opened' && secrets.GH_PROJECT_PAT != null}}
     name: Add issue to project
     runs-on: ubuntu-latest
     steps:
@@ -21,7 +21,7 @@ jobs:
           github-token: ${{ secrets.GH_PROJECT_PAT }}
 
   add-pr:
-    if: ${{ github.event_name == 'pull_request' && github.event.action == 'opened' }}
+    if: ${{ github.event_name == 'pull_request' && github.event.action == 'opened' && secrets.GH_PROJECT_PAT != null}}
     name: Add pull request to project
     runs-on: ubuntu-latest
     steps:
