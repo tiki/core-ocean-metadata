@@ -8,9 +8,6 @@ on:
     types:
       - opened
 
-permissions:
-  repository-projects: write
-
 jobs:
   add-issue:
     if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
@@ -21,7 +18,7 @@ jobs:
         uses: actions/add-to-project@v0.5.0
         with:
           project-url: https://github.com/orgs/tiki/projects/1
-          github-token: ${{ secrets.GH_PROJECT_PAT || github.token }}
+          github-token: ${{ secrets.GH_PROJECT_PAT }}
 
   add-pr:
     if: ${{ github.event_name == 'pull_request' && github.event.action == 'opened' }}
@@ -32,14 +29,14 @@ jobs:
         uses: actions/add-to-project@v0.5.0
         with:
           project-url: https://github.com/orgs/tiki/projects/1
-          github-token: ${{ secrets.GH_PROJECT_PAT || github.token }}
+          github-token: ${{ secrets.GH_PROJECT_PAT }}
         id: add-project
 
       - name: Add to sprint
         uses: titoportas/update-project-fields@v0.1.0
         with:
           project-url: https://github.com/orgs/tiki/projects/1
-          github-token: ${{ secrets.GH_PROJECT_PAT || github.token }}
+          github-token: ${{ secrets.GH_PROJECT_PAT }}
           item-id: ${{ steps.add-project.outputs.itemId }}
           field-keys: Sprint
           field-values: "[0]"
