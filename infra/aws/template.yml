@@ -9,8 +9,6 @@ Resources:
       Location: queue.yml
       Parameters:
         QueueName: cleanroom-sample-catalog
-        BucketName: mytiki-cleanroom-sample
-        DatabaseName: cleanroom_sample
 
   Function:
     Type: AWS::Serverless::Application
@@ -18,3 +16,5 @@ Resources:
       Location: function.yml
       Parameters:
         QueueArn: !GetAtt [Queue, Outputs.Arn]
+        BucketName: mytiki-cleanroom-sample
+        DatabaseName: cleanroom_sample
