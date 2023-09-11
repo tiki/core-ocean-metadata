@@ -6,6 +6,12 @@ Parameters:
   QueueArn:
     Description: Arn for the SQSEvent Queue
     Type: String
+  BucketName:
+    Description: The S3 bucket name for the lake
+    Type: String
+  DatabaseName:
+    Description: The Glue database name
+    Type: String
 
 Resources:
   Function:
@@ -27,6 +33,19 @@ Resources:
               - ReportBatchItemFailures
             BatchSize: 10
             Queue: !Ref QueueArn
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref BucketName
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - glue:GetTable
+                - glue:GetTables
+              Resource:
+                - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog"
+                - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/${DatabaseName}"
+                - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:table/${DatabaseName}/*"
 
 Outputs:
   Arn:
