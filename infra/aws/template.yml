@@ -7,6 +7,7 @@ Resources:
     Type: AWS::Serverless::Application
     Properties:
       Location: queue.yml
+      QueueName: cleanroom-sample-catalog
 
   Function:
     Type: AWS::Serverless::Application
