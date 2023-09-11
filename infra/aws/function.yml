@@ -42,6 +42,7 @@ Resources:
               Action:
                 - glue:GetTable
                 - glue:GetTables
+                - glue:UpdateTable
               Resource:
                 - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog"
                 - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/${DatabaseName}"
