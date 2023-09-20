@@ -3,7 +3,7 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.ocean.metadata;
+package com.mytiki.core.iceberg.metadata;
 
 public class ReqBody {
     private String table;
