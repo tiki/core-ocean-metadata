@@ -16,8 +16,7 @@ Resources:
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-          Statement:
-            - Effect: Allow
-              Action:
-                - serverlessrepo:*
-              Resource: "*"
+          - Effect: Allow
+            Action:
+              - serverlessrepo:*
+            Resource: "*"
