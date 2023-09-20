@@ -57,7 +57,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: SAM Deploy GitHub
-        run: cd infra/github && sam build && sam package --force-upload && sam deploy --force-upload
+        run: cd infra/github && sam build && sam package && sam deploy
 
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
