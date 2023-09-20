@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Ocean - Metadata Infrastructure
+Description: Iceberg Metadata
 
 Parameters:
   RoleName:
     Description: Name of the IAM Role for the deployment
     Type: String
-    Default: "GitHubDeployOceanMetadata"
+    Default: "GitHubDeployIcebergMetadata"
 
 Resources:
   Role:
@@ -15,7 +15,7 @@ Resources:
       Location: role.yml
       Parameters:
         GitHubOrg: tiki
-        RepositoryName: ocean-metadata
+        RepositoryName: core-iceberg-metadata
         RoleName: !Ref RoleName
 
   Policy:

@@ -1,20 +1,86 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Ocean - Metadata Infrastructure
+Description: Iceberg Metadata
+
+Parameters:
+  QueueName:
+    Type: String
+    Description: The name of the FIFO Queue.
+  BucketName:
+    Description: The S3 bucket name for the lake
+    Type: String
+  DatabaseName:
+    Description: The Glue database name
+    Type: String
+  UtilsName:
+    Type: String
+    Default: core-iceberg-utils
+    Description: Enter the name of the utils layer.
+  UtilsVersion:
+    Type: Number
+    Description: Enter the version number of the utils layer.
+
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: core-iceberg-metadata
+    Description: Iceberg Metadata
+    Author: tiki
+    SpdxLicenseId: MIT
+    LicenseUrl: ../../LICENSE
+    ReadmeUrl: ../../README.md
+    Labels: ['iceberg']
+    HomePageUrl: https://github.com/tiki/core-iceberg-metadata
+    SemanticVersion: 0.1.2
+    SourceCodeUrl: https://github.com/tiki/core-iceberg-metadata
 
 Resources:
   Queue:
-    Type: AWS::Serverless::Application
+    Type: AWS::SQS::Queue
     Properties:
-      Location: queue.yml
-      Parameters:
-        QueueName: cleanroom-sample-catalog
+      QueueName: !Sub "${QueueName}.fifo"
+      ContentBasedDeduplication: true
+      DeduplicationScope: messageGroup
+      FifoQueue: true
 
   Function:
-    Type: AWS::Serverless::Application
+    Type: AWS::Serverless::Function
     Properties:
-      Location: function.yml
-      Parameters:
-        QueueArn: !GetAtt [Queue, Outputs.Arn]
-        BucketName: mytiki-cleanroom-sample
-        DatabaseName: cleanroom_sample
+      CodeUri: ../..
+      Handler: com.mytiki.ocean.metadata.App::handleRequest
+      Runtime: java17
+      Architectures:
+        - arm64
+      MemorySize: 512
+      Timeout: 20
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Enabled: true
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            BatchSize: 10
+            Queue: !GetAtt Queue.Arn
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref BucketName
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - glue:GetTable
+                - glue:GetTables
+                - glue:UpdateTable
+              Resource:
+                - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog"
+                - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/${DatabaseName}"
+                - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:table/${DatabaseName}/*"
+      Layers:
+        - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${UtilsName}:${UtilsVersion}"
+Outputs:
+  Function:
+    Description: Lambda Arn
+    Value: !GetAtt Function.Arn
+  Queue:
+    Description: SQS Arn
+    Value: !GetAtt Queue.Arn

@@ -3,12 +3,11 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.ocean.metadata.mock;
+package com.mytiki.core.iceberg.metadata.mock;
 
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.mytiki.ocean.common.Mapper;
-import com.mytiki.ocean.metadata.ReqBody;
-import org.apache.logging.log4j.util.Strings;
+import com.mytiki.core.iceberg.metadata.ReqBody;
+import com.mytiki.core.iceberg.utils.Mapper;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

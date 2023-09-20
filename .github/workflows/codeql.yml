@@ -8,7 +8,9 @@ on:
     branches:
       - main
 
-# Cancel any active builds when new commits are pushed
+env:
+  UTILS_VERSION: 0.2.1
+
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
@@ -33,6 +35,17 @@ jobs:
         with:
           java-version: '20'
           distribution: 'zulu'
+
+      - name: Check out utils
+        uses: actions/checkout@v4
+        with:
+          repository: tiki/core-iceberg-utils
+          token: ${{ github.token }}
+          path: utils
+          ref: ${{ env.UTILS_VERSION }}
+
+      - name: Maven Install Utils
+        run: cd utils && mvn clean package install
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2

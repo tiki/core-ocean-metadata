@@ -3,19 +3,16 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-package com.mytiki.ocean.metadata;
+package com.mytiki.core.iceberg.metadata;
 
 import com.amazonaws.services.lambda.runtime.events.SQSBatchResponse;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.mytiki.ocean.common.Iceberg;
-import com.mytiki.ocean.metadata.mock.MockEvent;
-import com.mytiki.ocean.metadata.mock.MockIceberg;
+import com.mytiki.core.iceberg.metadata.mock.MockEvent;
+import com.mytiki.core.iceberg.metadata.mock.MockIceberg;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;

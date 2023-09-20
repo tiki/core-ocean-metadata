@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+env:
+  UTILS_VERSION: 0.2.1
+
 # Cancel any active builds when new commits are pushed
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
@@ -27,6 +30,17 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
+
+      - name: Check out utils
+        uses: actions/checkout@v4
+        with:
+          repository: tiki/core-iceberg-utils
+          token: ${{ github.token }}
+          path: utils
+          ref: ${{ env.UTILS_VERSION }}
+
+      - name: Maven Install Utils
+        run: cd utils && mvn clean package install
 
       - name: Maven Package
         run: mvn clean package
