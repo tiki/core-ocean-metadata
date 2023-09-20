@@ -50,7 +50,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y xmlstarlet
 
       - name: AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::254962200554:role/GitHubDeployBase
           role-session-name: ${{ env.SESSION_NAME }}
@@ -60,7 +60,7 @@ jobs:
         run: cd infra/github && sam build && sam package --force-upload && sam deploy --force-upload
 
       - name: AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::254962200554:role/GitHubDeployOceanMetadata
           role-session-name: ${{ env.SESSION_NAME }}
