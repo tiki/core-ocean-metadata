@@ -62,7 +62,7 @@ jobs:
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::254962200554:role/GitHubDeployOceanMetadata
+          role-to-assume: arn:aws:iam::254962200554:role/GitHubDeployIcebergMetadata
           role-session-name: ${{ env.SESSION_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
