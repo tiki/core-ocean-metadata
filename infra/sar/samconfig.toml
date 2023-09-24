@@ -1,9 +1,9 @@
 version = 0.1
 
 [default.global.parameters]
-stack_name = "core-iceberg-metadata-aws"
+stack_name = "core-iceberg-metadata-sar"
 s3_bucket = "mytiki-sam-deploy"
-s3_prefix = "core/iceberg/metadata/aws"
+s3_prefix = "core/iceberg/metadata/sar"
 region = "us-east-2"
 
 [default.deploy.parameters]
