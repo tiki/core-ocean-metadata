@@ -7,11 +7,6 @@ on:
     types:
       - closed
 
-env:
-  SESSION_NAME : "gh_action"
-  AWS_REGION : "us-east-2"
-  UTILS_VERSION: 0.2.1
-
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
   cancel-in-progress: true
@@ -26,8 +21,10 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+
+      - name: SetVars
+        run: |
+          sed -i 's/${AWS::AccountId}/${{ secrets.AWS_ACCOUNT_ID }}/' infra/role/template.yml
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -41,7 +38,7 @@ jobs:
           repository: tiki/core-iceberg-utils
           token: ${{ github.token }}
           path: utils
-          ref: ${{ env.UTILS_VERSION }}
+          ref: ${{ vars.UTILS_VERSION }}
 
       - name: Maven Install Utils
         run: cd utils && mvn clean package install
@@ -52,22 +49,22 @@ jobs:
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::254962200554:role/GitHubDeployBase
-          role-session-name: ${{ env.SESSION_NAME }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubDeployBase
+          role-session-name: ${{ vars.SESSION_NAME }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: SAM Deploy GitHub
-        run: cd infra/github && sam build && sam package && sam deploy
+        run: cd infra/role && sam build && sam package && sam deploy
 
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::254962200554:role/GitHubDeployIcebergMetadata
-          role-session-name: ${{ env.SESSION_NAME }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubDeployCoreIcebergMetadata
+          role-session-name: ${{ vars.SESSION_NAME }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: SAM Publish
-        run: cd infra/aws && sam build && sam package --output-template-file packaged.yaml && sam publish --template packaged.yaml
+        run: cd infra/sar && sam build && sam package --output-template-file packaged.yaml && sam publish --template packaged.yaml
 
       - name: Get Version
         id: version

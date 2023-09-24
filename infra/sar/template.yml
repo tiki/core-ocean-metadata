@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Iceberg Metadata
+Description: Core Iceberg Metadata SAR
 
 Parameters:
   QueueName:
@@ -30,7 +30,7 @@ Metadata:
     ReadmeUrl: ../../README.md
     Labels: ['iceberg']
     HomePageUrl: https://github.com/tiki/core-iceberg-metadata
-    SemanticVersion: 0.1.2
+    SemanticVersion: 0.1.4
     SourceCodeUrl: https://github.com/tiki/core-iceberg-metadata
 
 Resources:
