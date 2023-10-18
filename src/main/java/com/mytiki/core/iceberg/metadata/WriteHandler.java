@@ -10,16 +10,17 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSBatchResponse;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.mytiki.core.iceberg.utils.Iceberg;
+import com.mytiki.core.iceberg.utils.Initialize;
 import com.mytiki.core.iceberg.utils.Mapper;
 import org.apache.iceberg.*;
 import org.apache.iceberg.catalog.TableIdentifier;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WriteHandler implements RequestHandler<SQSEvent, SQSBatchResponse> {
-    protected static final Logger logger = Logger.getLogger(WriteHandler.class);
+    protected static final Logger logger = Initialize.logger(WriteHandler.class);
     private final Mapper mapper = new Mapper();
     private final Iceberg iceberg;
 

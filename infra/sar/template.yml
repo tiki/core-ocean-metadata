@@ -28,7 +28,7 @@ Metadata:
     SpdxLicenseId: MIT
     LicenseUrl: ../../LICENSE
     ReadmeUrl: ../../README.md
-    Labels: ['iceberg']
+    Labels: [ 'iceberg' ]
     HomePageUrl: https://github.com/tiki/core-iceberg-metadata
     SemanticVersion: 0.1.4
     SourceCodeUrl: https://github.com/tiki/core-iceberg-metadata
@@ -52,6 +52,14 @@ Resources:
         - arm64
       MemorySize: 512
       Timeout: 20
+      Tracing: Active
+      SnapStart:
+        ApplyOn: PublishedVersions
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: "/opt/otel-sqs-handler"
+          ICEBERG_WAREHOUSE: !Sub "s3://${BucketName}"
+          ICEBERG_DATABASE: !Ref DatabaseName
       Events:
         SQSEvent:
           Type: SQS
@@ -75,8 +83,14 @@ Resources:
                 - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog"
                 - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/${DatabaseName}"
                 - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:table/${DatabaseName}/*"
+            - Effect: Allow
+              Action:
+                - xray:PutTraceSegments
+                - xray:PutTelemetryRecords
+              Resource: "*"
       Layers:
         - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${UtilsName}:${UtilsVersion}"
+        - !Sub "arn:aws:lambda:${AWS::Region}:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-30-0:1"
 Outputs:
   Function:
     Description: Lambda Arn
