@@ -7,43 +7,45 @@ package com.mytiki.core.iceberg.metadata;
 
 import com.amazonaws.services.lambda.runtime.events.SQSBatchResponse;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.mytiki.core.iceberg.metadata.mock.MockEvent;
+import com.amazonaws.services.lambda.runtime.tests.annotations.Event;
 import com.mytiki.core.iceberg.metadata.mock.MockIceberg;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import com.mytiki.core.iceberg.utils.ApiException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import software.amazon.awssdk.http.HttpStatusCode;
 
-import static org.junit.Assert.assertEquals;
-
-@RunWith(MockitoJUnitRunner.class)
 public class WriteTest {
 
     MockIceberg mockIceberg;
 
-    @Before
+    @BeforeEach
     public void init() {
         mockIceberg = new MockIceberg();
     }
 
-    @Test
-    public void HandleRequest_Batch_Success() {
-        SQSEvent event = MockEvent.event("dummy");
+    @ParameterizedTest
+    @Event(value = "events/sqs_event_success.json", type = SQSEvent.class)
+    public void HandleRequest_Batch_Success(SQSEvent event) {
         WriteHandler handler = new WriteHandler(mockIceberg.iceberg());
         SQSBatchResponse response = handler.handleRequest(event, null);
-        assertEquals(0, response.getBatchItemFailures().size());
+        Assertions.assertEquals(0, response.getBatchItemFailures().size());
     }
 
-    @Test
-    @Ignore
-    public void HandleRequest_Batch_FailSome() {
-        //TODO
+    @ParameterizedTest
+    @Event(value = "events/sqs_event_fail_one.json", type = SQSEvent.class)
+    public void HandleRequest_Batch_FailSome(SQSEvent event) {
+        WriteHandler handler = new WriteHandler(mockIceberg.iceberg());
+        SQSBatchResponse response = handler.handleRequest(event, null);
+        Assertions.assertEquals(1, response.getBatchItemFailures().size());
     }
 
-    @Test
-    @Ignore
-    public void HandleRequest_Batch_FailAll() {
-        //TODO
+    @ParameterizedTest
+    @Event(value = "events/sqs_event_fail_all.json", type = SQSEvent.class)
+    public void HandleRequest_Batch_FailAll(SQSEvent event) {
+        WriteHandler handler = new WriteHandler(mockIceberg.iceberg());
+        ApiException ex = Assertions.assertThrows(ApiException.class, () ->
+                handler.handleRequest(event, null));
+        Assertions.assertEquals(HttpStatusCode.BAD_REQUEST, ex.getStatus());
     }
 }
