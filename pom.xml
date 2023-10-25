@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mytiki</groupId>
   <artifactId>core-iceberg-metadata</artifactId>
-  <version>0.1.5</version>
+  <version>0.1.6</version>
   <packaging>jar</packaging>
   <name>Iceberg Metadata</name>
   <properties>
@@ -19,13 +19,13 @@
     <dependency>
       <groupId>com.mytiki</groupId>
       <artifactId>core-iceberg-utils</artifactId>
-      <version>0.2.4</version>
+      <version>0.2.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.9.2</version>
+      <version>5.10.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
