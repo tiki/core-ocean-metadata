@@ -49,7 +49,7 @@ Resources:
       Handler: com.mytiki.ocean.metadata.App::handleRequest
       Runtime: java17
       Architectures:
-        - arm64
+        - x86_64
       MemorySize: 512
       Timeout: 20
       Tracing: Active
@@ -90,7 +90,7 @@ Resources:
               Resource: "*"
       Layers:
         - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${UtilsName}:${UtilsVersion}"
-        - !Sub "arn:aws:lambda:${AWS::Region}:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-30-0:1"
+        - !Sub "arn:aws:lambda:${AWS::Region}:901920570463:layer:aws-otel-java-wrapper-x86_64-ver-1-30-0:1"
 Outputs:
   Function:
     Description: Lambda Arn
