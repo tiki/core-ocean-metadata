@@ -30,7 +30,7 @@ Metadata:
     ReadmeUrl: ../../README.md
     Labels: [ 'iceberg' ]
     HomePageUrl: https://github.com/tiki/core-iceberg-metadata
-    SemanticVersion: 0.1.7
+    SemanticVersion: 0.1.8
     SourceCodeUrl: https://github.com/tiki/core-iceberg-metadata
 
 Resources:
@@ -46,7 +46,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../..
-      Handler: com.mytiki.ocean.metadata.App::handleRequest
+      Handler: com.mytiki.core.iceberg.metadata.App::handleRequest
       Runtime: java17
       Architectures:
         - x86_64
@@ -59,7 +59,7 @@ Resources:
         Variables:
           AWS_LAMBDA_EXEC_WRAPPER: "/opt/otel-sqs-handler"
           ICEBERG_WAREHOUSE: !Sub "s3://${BucketName}"
-          ICEBERG_DATABASE: !Ref DatabaseName
+          ICEBERG_DATABASE_NAME: !Ref DatabaseName
       Events:
         SQSEvent:
           Type: SQS
