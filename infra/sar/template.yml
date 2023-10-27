@@ -30,7 +30,7 @@ Metadata:
     ReadmeUrl: ../../README.md
     Labels: [ 'iceberg' ]
     HomePageUrl: https://github.com/tiki/core-iceberg-metadata
-    SemanticVersion: 0.1.8
+    SemanticVersion: 0.1.9
     SourceCodeUrl: https://github.com/tiki/core-iceberg-metadata
 
 Resources:
