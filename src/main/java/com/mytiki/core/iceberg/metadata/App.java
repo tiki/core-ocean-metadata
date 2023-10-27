@@ -18,10 +18,12 @@ import java.util.List;
 
 public class App implements RequestHandler<SQSEvent, SQSBatchResponse> {
     protected static final Logger logger = Initialize.logger(App.class);
+    private final Iceberg iceberg = Iceberg.load();
 
     public SQSBatchResponse handleRequest(final SQSEvent event, final Context context) {
         try {
-            WriteHandler handler = new WriteHandler(Iceberg.load());
+            iceberg.initialize();
+            WriteHandler handler = new WriteHandler(iceberg);
             return handler.handleRequest(event, context);
         } catch (Exception ex) {
             logger.error(ex, ex.fillInStackTrace());
