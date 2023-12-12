@@ -41,7 +41,9 @@ jobs:
           ref: ${{ vars.UTILS_VERSION }}
 
       - name: Maven Install Utils
-        run: cd utils && mvn clean package install
+        run: | 
+          cd utils
+          mvn clean package install
 
       - name: Install xmlstarlet
         run: sudo apt-get update && sudo apt-get install -y xmlstarlet
@@ -54,17 +56,25 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: SAM Deploy GitHub
-        run: cd infra/role && sam build && sam package && sam deploy
+        run: |
+          cd infra/role
+          sam build
+          sam package
+          sam deploy
 
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubDeployCoreIcebergMetadata
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/GitHubDeployCoreOceanMetadata
           role-session-name: ${{ vars.SESSION_NAME }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: SAM Publish
-        run: cd infra/sar && sam build && sam package --output-template-file packaged.yaml && sam publish --template packaged.yaml
+      - name: SAM Deploy Function
+        run: |
+          cd infra/sar
+          sam build
+          sam package
+          sam deploy
 
       - name: Get Version
         id: version

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Core Iceberg Metadata SAR
+Description: Core Ocean Iceberg Metadata Function
 
 Parameters:
   QueueName:
@@ -19,19 +19,6 @@ Parameters:
   UtilsVersion:
     Type: Number
     Description: Enter the version number of the utils layer.
-
-Metadata:
-  AWS::ServerlessRepo::Application:
-    Name: core-iceberg-metadata
-    Description: Iceberg Metadata
-    Author: tiki
-    SpdxLicenseId: MIT
-    LicenseUrl: ../../LICENSE
-    ReadmeUrl: ../../README.md
-    Labels: [ 'iceberg' ]
-    HomePageUrl: https://github.com/tiki/core-iceberg-metadata
-    SemanticVersion: 0.1.9
-    SourceCodeUrl: https://github.com/tiki/core-iceberg-metadata
 
 Resources:
   Queue:

@@ -6,7 +6,7 @@ Parameters:
   RoleName:
     Description: Name of the IAM Role for the deployment
     Type: String
-    Default: "GitHubDeployCoreIcebergMetadata"
+    Default: "GitHubDeployCoreOceanMetadata"
 
 Resources:
   Role:
@@ -17,7 +17,7 @@ Resources:
         SemanticVersion: 0.0.3
       Parameters:
         GitHubOrg: tiki
-        RepositoryName: core-iceberg-metadata
+        RepositoryName: core-ocean-metadata
         RoleName: !Ref RoleName
 
   Policy:
@@ -29,16 +29,6 @@ Resources:
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Effect: Allow
-            Action:
-              - serverlessrepo:ListApplications
-              - serverlessrepo:CreateApplication
-              - serverlessrepo:SearchApplications
-            Resource: "*"
-          - Effect: Allow
-            Action:
-              - serverlessrepo:*
-            Resource: !Sub arn:aws:serverlessrepo:${AWS::Region}:${AWS::AccountId}:applications/core-iceberg-metadata
           - Effect: Allow
             Action:
               - s3:PutObject
