@@ -6,19 +6,23 @@ Parameters:
   QueueName:
     Type: String
     Description: The name of the FIFO Queue.
+    Default: ocean-metadata
   BucketName:
     Description: The S3 bucket name for the lake
     Type: String
+    Default: mytiki-ocean
   DatabaseName:
     Description: The Glue database name
     Type: String
+    Default: ocean
   UtilsName:
     Type: String
-    Default: core-iceberg-utils
+    Default: core-ocean-iceberg-utils
     Description: Enter the name of the utils layer.
   UtilsVersion:
     Type: Number
     Description: Enter the version number of the utils layer.
+    Default: 16
 
 Resources:
   Queue:
