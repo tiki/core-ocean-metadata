@@ -22,7 +22,7 @@ Parameters:
   UtilsVersion:
     Type: Number
     Description: Enter the version number of the utils layer.
-    Default: 16
+    Default: 1
 
 Resources:
   Queue:
