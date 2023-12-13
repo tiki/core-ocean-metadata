@@ -19,7 +19,7 @@
     <dependency>
       <groupId>com.mytiki</groupId>
       <artifactId>core-iceberg-utils</artifactId>
-      <version>0.2.6</version>
+      <version>0.2.7</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
