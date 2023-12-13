@@ -36,7 +36,7 @@ jobs:
       - name: Check out utils
         uses: actions/checkout@v4
         with:
-          repository: tiki/core-iceberg-utils
+          repository: tiki/core-ocean-iceberg-utils
           token: ${{ github.token }}
           path: utils
           ref: ${{ vars.UTILS_VERSION }}
