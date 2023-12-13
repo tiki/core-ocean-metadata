@@ -44,7 +44,9 @@ Resources:
             Resource: "*"
           - Effect: Allow
             Action: iam:PassRole
-            Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/${RoleName}
+            Resource:
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/${RoleName}
+              - !Sub arn:aws:iam::${AWS::AccountId}:role/core-ocean-metadata-function-*
             Condition:
               StringEquals:
                 iam:PassedToService: lambda.amazonaws.com
@@ -87,4 +89,4 @@ Resources:
               - iam:DeleteRolePolicy
               - iam:AttachRolePolicy
               - iam:DetachRolePolicy
-            Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/core-ocean-metadata-function*
+            Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/core-ocean-metadata-function-*

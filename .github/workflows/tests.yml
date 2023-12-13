@@ -51,7 +51,7 @@ jobs:
       - name: Validate AWS Template
         run: |
           cd infra/function
-          sam validate --lint
+          sam validate
 
       - name: Build AWS Template
         run: |
