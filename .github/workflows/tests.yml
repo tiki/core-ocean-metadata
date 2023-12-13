@@ -30,7 +30,7 @@ jobs:
       - name: Check out utils
         uses: actions/checkout@v4
         with:
-          repository: tiki/core-iceberg-utils
+          repository: tiki/core-ocean-iceberg-utils
           token: ${{ github.token }}
           path: utils
           ref: ${{ vars.UTILS_VERSION }}
@@ -49,7 +49,11 @@ jobs:
           path: target/surefire-reports/**/*.xml
 
       - name: Validate AWS Template
-        run: cd infra/sar && sam validate
+        run: |
+          cd infra/function
+          sam validate --lint
 
       - name: Build AWS Template
-        run: cd infra/sar && sam build
+        run: |
+          cd infra/function
+          sam build

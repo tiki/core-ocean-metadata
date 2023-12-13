@@ -41,9 +41,9 @@ jobs:
       - name: Update POM Version
         run: xmlstarlet ed -L -u "_:project/_:version" -v "${{ steps.semver.outputs.nextStrict }}" pom.xml
 
-      - name: Update SAR Version
+      - name: Update Function Version
         run: |
-          sed -i 's/SemanticVersion: .*/SemanticVersion: ${{ steps.semver.outputs.nextStrict }}/' infra/sar/template.yml
+          sed -i 's/SemanticVersion: .*/SemanticVersion: ${{ steps.semver.outputs.nextStrict }}/' infra/function/template.yml
 
       - name: Commit Changes
         continue-on-error: true
@@ -53,7 +53,7 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GH Action"
           git add pom.xml
-          git add infra/sar/template.yml
+          git add infra/function/template.yml
           git commit -m 'version bump'
           git push
 
