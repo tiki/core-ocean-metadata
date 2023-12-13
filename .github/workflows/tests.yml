@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '20'
           distribution: 'zulu'
@@ -30,7 +30,7 @@ jobs:
       - name: Check out utils
         uses: actions/checkout@v4
         with:
-          repository: tiki/core-iceberg-utils
+          repository: tiki/core-ocean-iceberg-utils
           token: ${{ github.token }}
           path: utils
           ref: ${{ vars.UTILS_VERSION }}
@@ -49,7 +49,11 @@ jobs:
           path: target/surefire-reports/**/*.xml
 
       - name: Validate AWS Template
-        run: cd infra/sar && sam validate
+        run: |
+          cd infra/function
+          sam validate
 
       - name: Build AWS Template
-        run: cd infra/sar && sam build
+        run: |
+          cd infra/function
+          sam build

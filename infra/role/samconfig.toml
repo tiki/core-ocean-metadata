@@ -1,9 +1,9 @@
 version = 0.1
 
 [default.global.parameters]
-stack_name = "core-iceberg-metadata-role"
+stack_name = "core-ocean-metadata-role"
 s3_bucket = "mytiki-sam-deploy"
-s3_prefix = "core/iceberg/metadata/role"
+s3_prefix = "core/ocean/metadata/role"
 region = "us-east-2"
 
 [default.deploy.parameters]

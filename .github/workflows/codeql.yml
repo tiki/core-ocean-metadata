@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 1
 
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '20'
           distribution: 'zulu'
@@ -36,7 +36,7 @@ jobs:
       - name: Check out utils
         uses: actions/checkout@v4
         with:
-          repository: tiki/core-iceberg-utils
+          repository: tiki/core-ocean-iceberg-utils
           token: ${{ github.token }}
           path: utils
           ref: ${{ vars.UTILS_VERSION }}

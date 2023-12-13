@@ -1,37 +1,28 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Core Iceberg Metadata SAR
+Description: Core Ocean Iceberg Metadata Function
 
 Parameters:
   QueueName:
     Type: String
     Description: The name of the FIFO Queue.
+    Default: ocean-metadata
   BucketName:
     Description: The S3 bucket name for the lake
     Type: String
+    Default: mytiki-ocean
   DatabaseName:
     Description: The Glue database name
     Type: String
+    Default: ocean
   UtilsName:
     Type: String
-    Default: core-iceberg-utils
+    Default: core-ocean-iceberg-utils
     Description: Enter the name of the utils layer.
   UtilsVersion:
     Type: Number
     Description: Enter the version number of the utils layer.
-
-Metadata:
-  AWS::ServerlessRepo::Application:
-    Name: core-iceberg-metadata
-    Description: Iceberg Metadata
-    Author: tiki
-    SpdxLicenseId: MIT
-    LicenseUrl: ../../LICENSE
-    ReadmeUrl: ../../README.md
-    Labels: [ 'iceberg' ]
-    HomePageUrl: https://github.com/tiki/core-iceberg-metadata
-    SemanticVersion: 0.1.9
-    SourceCodeUrl: https://github.com/tiki/core-iceberg-metadata
+    Default: 1
 
 Resources:
   Queue:
@@ -87,6 +78,10 @@ Resources:
               Action:
                 - xray:PutTraceSegments
                 - xray:PutTelemetryRecords
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - lakeformation:GetDataAccess
               Resource: "*"
       Layers:
         - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${UtilsName}:${UtilsVersion}"
