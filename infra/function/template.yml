@@ -1,3 +1,4 @@
+---
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Core Ocean Iceberg Metadata Function
@@ -32,6 +33,25 @@ Resources:
       ContentBasedDeduplication: true
       DeduplicationScope: messageGroup
       FifoQueue: true
+      FifoThroughputLimit: perMessageGroupId
+      MessageRetentionPeriod: 604800
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
+        maxReceiveCount: 5
+
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${QueueName}-DLQ.fifo"
+      ContentBasedDeduplication: true
+      DeduplicationScope: messageGroup
+      FifoQueue: true
+      FifoThroughputLimit: perMessageGroupId
+      MessageRetentionPeriod: 604800
+      RedriveAllowPolicy:
+        redrivePermission: byQueue
+        sourceQueueArns:
+          - !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${QueueName}.fifo"
 
   Function:
     Type: AWS::Serverless::Function
@@ -46,6 +66,10 @@ Resources:
       Tracing: Active
       SnapStart:
         ApplyOn: PublishedVersions
+      LoggingConfig:
+        LogFormat: JSON
+        ApplicationLogLevel: TRACE
+        SystemLogLevel: DEBUG
       Environment:
         Variables:
           AWS_LAMBDA_EXEC_WRAPPER: "/opt/otel-sqs-handler"
@@ -86,10 +110,40 @@ Resources:
       Layers:
         - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${UtilsName}:${UtilsVersion}"
         - !Sub "arn:aws:lambda:${AWS::Region}:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-30-0:1"
+
 Outputs:
   Function:
-    Description: Lambda Arn
+    Description: ARN of the Lambda function
     Value: !GetAtt Function.Arn
+
+  FunctionArn:
+    Description: ARN of the Lambda function
+    Value: !GetAtt Function.Arn
+
   Queue:
-    Description: SQS Arn
+    Description: ARN of the SQS queue for metadata events
     Value: !GetAtt Queue.Arn
+
+  QueueArn:
+    Description: ARN of the SQS queue for metadata events
+    Value: !GetAtt Queue.Arn
+
+  QueueName:
+    Description: Name of the SQS queue for metadata events
+    Value: !GetAtt Queue.QueueName
+
+  QueueUrl:
+    Description: URL of the SQS queue for metadata events
+    Value: !GetAtt Queue.QueueUrl
+
+  DeadLetterQueueArn:
+    Description: ARN of the DLQ for metadata events
+    Value: !GetAtt DeadLetterQueue.Arn
+
+  DeadLetterQueueName:
+    Description: Name of the DLQ for metadata events
+    Value: !GetAtt DeadLetterQueue.QueueName
+
+  DeadLetterQueueUrl:
+    Description: URL of the DQL for metadata events
+    Value: !GetAtt DeadLetterQueue.QueueUrl
