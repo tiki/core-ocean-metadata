@@ -1,0 +1,138 @@
+---
+name: CICD
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  Build:
+    name: Metadata Service
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          submodules: recursive
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: zulu
+          cache: maven
+          cache-dependency-path: |
+            pom.xml
+            utils/pom.xml
+
+      - name: Install SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Lint Java code
+        run: make lint-code
+
+      - name: Build and test Java code
+        run: make build-code
+
+      - name: Upload Java test results
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: test-results
+          path: target/surefire-reports/**/*.xml
+
+      - name: Lint infra code
+        run: make lint-infra
+
+      - name: Build infra code (synthesize)
+        run: make build-infra
+
+      - name: Upload build artifacts (SAM build)
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: sam-build-output
+          path: .aws-sam/
+
+  Analyze:
+    name: CodeQL
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ github.token }}
+          submodules: recursive
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 20
+          distribution: zulu
+          cache: maven
+          cache-dependency-path: |
+            pom.xml
+            utils/pom.xml
+
+      - name: Install deps
+        run: make build-utils
+
+      - name: Initialize
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Analysis
+        uses: github/codeql-action/analyze@v3
+
+  # TODO:
+  # - Move this to another workflow and trigger based on tag
+  # - Deploy pushes to main to dev env
+  # - Tags go to prod
+  Deploy:
+    name: Prod
+    runs-on: ubuntu-22.04
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - Build
+      - Analyze
+    env:
+      ENVIRONMENT: prod
+    steps:
+      - name: Install SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sam-build-output
+
+      - name: Deploy code
+        run: make deploy-code
+
+      - name: Deploy infra
+        run: make deploy-infra

@@ -5,13 +5,29 @@ Description: Core Ocean Iceberg Metadata Function
 
 Parameters:
   FunctionName:
-    Type: String
     Description: The name of the Lambda function
+    Type: String
     Default: core-ocean-metadata
+  FunctionMemorySize:
+    Description: MB of memory allocated to the function
+    Type: Number
+    Default: 512
+    MinValue: 512
+    MaxValue: 1024
+  FunctionTimeout:
+    Description: Number of seconds before the function is stopped
+    Type: Number
+    Default: 30
+    MinValue: 20
+    MaxValue: 120
   QueueName:
     Type: String
     Description: The name of the FIFO Queue.
     Default: ocean-metadata
+  QueueBatchSize:
+    Description: Size of message batches to send to Lambda invocation
+    Type: Number
+    Default: 10
   BucketName:
     Description: The S3 bucket name for the lake
     Type: String
@@ -21,12 +37,12 @@ Parameters:
     Type: String
     Default: ocean
   UtilsName:
-    Type: String
     Default: core-ocean-iceberg-utils
+    Type: String
     Description: Enter the name of the utils layer.
   UtilsVersion:
-    Type: Number
     Description: Enter the version number of the utils layer.
+    Type: Number
     Default: 1
 
 Resources:
@@ -49,17 +65,20 @@ Resources:
       Queues:
         - !Ref Queue
       PolicyDocument:
-        Principal:
-          AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-        Effect: Allow
-        Action:
-          - sqs:ChangeMessageVisibility
-          - sqs:DeleteMessage
-          - sqs:GetQueueAttributes
-          - sqs:GetQueueUrl
-          - sqs:ListQueueTags
-          - sqs:ReceiveMessage
-          - sqs:SendMessage
+        Statement:
+          - Effect: Allow
+            Principal:
+              - !Sub "${AWS::AccountId}"
+            Action:
+              - sqs:ChangeMessageVisibility
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:ListQueueTags
+              - sqs:ReceiveMessage
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt Queue.Arn
 
   DeadLetterQueue:
     Type: AWS::SQS::Queue
@@ -81,22 +100,25 @@ Resources:
       Queues:
         - !Ref DeadLetterQueue
       PolicyDocument:
-        Principal:
-          AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-        Effect: Allow
-        Action:
-          - sqs:ChangeMessageVisibility
-          - sqs:DeleteMessage
-          - sqs:GetQueueAttributes
-          - sqs:GetQueueUrl
-          - sqs:ListQueueTags
-          - sqs:ReceiveMessage
-          - sqs:SendMessage
+        Statement:
+          - Effect: Allow
+            Principal:
+              - !Sub "${AWS::AccountId}"
+            Action:
+              - sqs:ChangeMessageVisibility
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:ListQueueTags
+              - sqs:ReceiveMessage
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt DeadLetterQueue.Arn
 
   FunctionDeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub "${FunctionName}-function-DLQ.fifo"
+      QueueName: !Sub "${FunctionName}-function-DLQ"
       MessageRetentionPeriod: 604800
 
   FunctionDeadLetterQueuePolicy:
@@ -105,30 +127,40 @@ Resources:
       Queues:
         - !Ref FunctionDeadLetterQueue
       PolicyDocument:
-        Principal:
-          AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-        Effect: Allow
-        Action:
-          - sqs:ChangeMessageVisibility
-          - sqs:DeleteMessage
-          - sqs:GetQueueAttributes
-          - sqs:GetQueueUrl
-          - sqs:ListQueueTags
-          - sqs:ReceiveMessage
-          - sqs:SendMessage
+        Statement:
+          - Effect: Allow
+            Principal:
+              - !Sub "${AWS::AccountId}"
+            Action:
+              - sqs:ChangeMessageVisibility
+              - sqs:DeleteMessage
+              - sqs:GetQueueAttributes
+              - sqs:GetQueueUrl
+              - sqs:ListQueueTags
+              - sqs:ReceiveMessage
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt FunctionDeadLetterQueue.Arn
 
   Function:
     Type: AWS::Serverless::Function
     Properties:
+      Description: Writes Parquet metadata to Iceberg tables
       FunctionName: !Ref FunctionName
-      CodeUri: ../..
+      CodeUri: .
       Handler: com.mytiki.core.iceberg.metadata.App::handleRequest
+      # TODO: Look into upgraded to Java 21
+      # Need to bump the version for core-ocean-iceberg-utils and its layer
+      # and runtime compatibility setting.
       Runtime: java17
+      # TODO: Look into switching this to arm64
       Architectures:
         - x86_64
-      MemorySize: 512
-      Timeout: 20
+      MemorySize: !Ref FunctionMemorySize
+      Timeout: !Ref FunctionTimeout
       Tracing: Active
+      AutoPublishAlias: latest
+      AutoPublishAliasAllProperties: false
       SnapStart:
         ApplyOn: PublishedVersions
       LoggingConfig:
@@ -143,6 +175,12 @@ Resources:
           AWS_LAMBDA_EXEC_WRAPPER: "/opt/otel-sqs-handler"
           ICEBERG_WAREHOUSE: !Sub "s3://${BucketName}"
           ICEBERG_DATABASE_NAME: !Ref DatabaseName
+      # TODO: Investigate concurrency config. I'm not sure we can have multiple
+      # concurrent writers to the same table. Limit for now.
+      ReservedConcurrentExecutions: 1
+      # TODO: Add tags
+      Tags: {}
+      PropagateTags: true
       Events:
         SQSEvent:
           Type: SQS
@@ -150,9 +188,10 @@ Resources:
             Enabled: true
             FunctionResponseTypes:
               - ReportBatchItemFailures
-            BatchSize: 10
+            BatchSize: !Ref QueueBatchSize
             Queue: !GetAtt Queue.Arn
       Policies:
+        # TODO: Pair these permissions down
         - S3CrudPolicy:
             BucketName: !Ref BucketName
         - Version: "2012-10-17"
@@ -213,5 +252,17 @@ Outputs:
     Value: !GetAtt DeadLetterQueue.QueueName
 
   DeadLetterQueueUrl:
-    Description: URL of the DQL for metadata events
+    Description: URL of the DLQ for metadata events
     Value: !GetAtt DeadLetterQueue.QueueUrl
+
+  FunctionDeadLetterQueueArn:
+    Description: ARN of the DLQ for Lambda function
+    Value: !GetAtt FunctionDeadLetterQueue.Arn
+
+  FunctionDeadLetterQueueName:
+    Description: Name of the DLQ for Lambda function
+    Value: !GetAtt FunctionDeadLetterQueue.QueueName
+
+  FunctionDeadLetterQueueUrl:
+    Description: URL of the DLQ for Lambda function
+    Value: !GetAtt FunctionDeadLetterQueue.QueueUrl
