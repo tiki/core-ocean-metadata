@@ -4,6 +4,10 @@ Transform: AWS::Serverless-2016-10-31
 Description: Core Ocean Iceberg Metadata Function
 
 Parameters:
+  FunctionName:
+    Type: String
+    Description: The name of the Lambda function
+    Default: core-ocean-metadata
   QueueName:
     Type: String
     Description: The name of the FIFO Queue.
@@ -39,6 +43,24 @@ Resources:
         deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
         maxReceiveCount: 5
 
+  QueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Sub Queue.Arn
+      PolicyDocument:
+        Principal:
+          AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+        Effect: Allow
+        Action:
+          - sqs:ChangeMessageVisibility
+          - sqs:DeleteMessage
+          - sqs:GetQueueAttributes
+          - sqs:GetQueueUrl
+          - sqs:ListQueueTags
+          - sqs:ReceiveMessage
+          - sqs:SendMessage
+
   DeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -53,9 +75,52 @@ Resources:
         sourceQueueArns:
           - !Sub "arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${QueueName}.fifo"
 
+  DeadLetterQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Sub DeadLetterQueue.Arn
+      PolicyDocument:
+        Principal:
+          AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+        Effect: Allow
+        Action:
+          - sqs:ChangeMessageVisibility
+          - sqs:DeleteMessage
+          - sqs:GetQueueAttributes
+          - sqs:GetQueueUrl
+          - sqs:ListQueueTags
+          - sqs:ReceiveMessage
+          - sqs:SendMessage
+
+  FunctionDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${FunctionName}-function-DLQ.fifo"
+      MessageRetentionPeriod: 604800
+
+  FunctionDeadLetterQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Sub FunctionDeadLetterQueue.Arn
+      PolicyDocument:
+        Principal:
+          AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+        Effect: Allow
+        Action:
+          - sqs:ChangeMessageVisibility
+          - sqs:DeleteMessage
+          - sqs:GetQueueAttributes
+          - sqs:GetQueueUrl
+          - sqs:ListQueueTags
+          - sqs:ReceiveMessage
+          - sqs:SendMessage
+
   Function:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub FunctionName
       CodeUri: ../..
       Handler: com.mytiki.core.iceberg.metadata.App::handleRequest
       Runtime: java17
@@ -70,6 +135,9 @@ Resources:
         LogFormat: JSON
         ApplicationLogLevel: TRACE
         SystemLogLevel: DEBUG
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !Sub FunctionDeadLetterQueue.Arn
       Environment:
         Variables:
           AWS_LAMBDA_EXEC_WRAPPER: "/opt/otel-sqs-handler"
