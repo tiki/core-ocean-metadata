@@ -47,7 +47,7 @@ Resources:
     Type: AWS::SQS::QueuePolicy
     Properties:
       Queues:
-        - !Sub Queue.Arn
+        - !Ref Queue
       PolicyDocument:
         Principal:
           AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
@@ -79,7 +79,7 @@ Resources:
     Type: AWS::SQS::QueuePolicy
     Properties:
       Queues:
-        - !Sub DeadLetterQueue.Arn
+        - !Ref DeadLetterQueue
       PolicyDocument:
         Principal:
           AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
@@ -103,7 +103,7 @@ Resources:
     Type: AWS::SQS::QueuePolicy
     Properties:
       Queues:
-        - !Sub FunctionDeadLetterQueue.Arn
+        - !Ref FunctionDeadLetterQueue
       PolicyDocument:
         Principal:
           AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
@@ -120,7 +120,7 @@ Resources:
   Function:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub FunctionName
+      FunctionName: !Ref FunctionName
       CodeUri: ../..
       Handler: com.mytiki.core.iceberg.metadata.App::handleRequest
       Runtime: java17
@@ -137,7 +137,7 @@ Resources:
         SystemLogLevel: DEBUG
       DeadLetterQueue:
         Type: SQS
-        TargetArn: !Sub FunctionDeadLetterQueue.Arn
+        TargetArn: !GetAtt FunctionDeadLetterQueue.Arn
       Environment:
         Variables:
           AWS_LAMBDA_EXEC_WRAPPER: "/opt/otel-sqs-handler"
