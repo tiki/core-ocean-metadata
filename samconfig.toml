@@ -2,18 +2,15 @@ version = 0.1
 
 [default.global.parameters]
 stack_name = "core-ocean-metadata-function"
+region = "us-east-2"
 
 [default.build.parameters]
 cached = true
 parallel = true
 
-[default.package.parameters]
-region = "us-east-2"
-
 [default.deploy.parameters]
 capabilities = ["CAPABILITY_IAM", "CAPABILITY_AUTO_EXPAND"]
 disable_rollback = true
-region = "us-east-2"
 no_fail_on_empty_changeset = true
 no_execute_changeset = true
 
@@ -21,6 +18,7 @@ no_execute_changeset = true
 lint = true
 
 [prod.global.parameters]
+region = "us-east-2"
 s3_bucket = "mytiki-sam-deploy"
 s3_prefix = "core/ocean/metadata/function"
 
@@ -28,6 +26,7 @@ s3_prefix = "core/ocean/metadata/function"
 no_execute_changeset = false
 
 [dev.global.parameters]
+region = "us-east-2"
 s3_bucket = "mytiki-sam-deploy-CREATE-DEV-BUCKET"
 s3_prefix = "core/ocean/metadata/function"
 

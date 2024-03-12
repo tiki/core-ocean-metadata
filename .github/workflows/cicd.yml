@@ -142,8 +142,5 @@ jobs:
         with:
           name: sam-build-output
 
-      - name: Deploy code
-        run: make deploy-code
-
-      - name: Deploy infra
-        run: make deploy-infra
+      - name: Deploy via SAM CLI
+        run: make deploy

@@ -36,10 +36,6 @@ build-code: build-utils
 build-infra:
 	sam build --config-env "${ENVIRONMENT}"
 
-.PHONY: deploy-code
-deploy-code:
-	sam package --config-env "${ENVIRONMENT}"
-
-.PHONY: deploy-infra
-deploy-infra:
+.PHONY: deploy
+deploy:
 	sam deploy --config-env "${ENVIRONMENT}"
