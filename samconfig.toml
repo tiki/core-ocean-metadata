@@ -2,15 +2,18 @@ version = 0.1
 
 [default.global.parameters]
 stack_name = "core-ocean-metadata-function"
-region = "us-east-2"
 
 [default.build.parameters]
 cached = true
 parallel = true
 
+[default.package.parameters]
+region = "us-east-2"
+
 [default.deploy.parameters]
 capabilities = ["CAPABILITY_IAM", "CAPABILITY_AUTO_EXPAND"]
 disable_rollback = true
+region = "us-east-2"
 no_fail_on_empty_changeset = true
 no_execute_changeset = true
 
