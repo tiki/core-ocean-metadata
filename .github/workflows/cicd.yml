@@ -121,6 +121,15 @@ jobs:
     env:
       ENVIRONMENT: prod
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: false
+          sparse_checkout: |
+            Makefile
+          sparse_checkout_cone_mode: false
+
       - name: Install SAM CLI
         uses: aws-actions/setup-sam@v2
         with:
