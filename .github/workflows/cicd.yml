@@ -17,13 +17,11 @@ concurrency:
 
 jobs:
   Build:
-    name: Metadata Service
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ github.token }}
           submodules: recursive
 
       - name: Install Java
@@ -68,19 +66,16 @@ jobs:
           path: .aws-sam/
 
   Analyze:
-    name: CodeQL
     runs-on: ubuntu-22.04
     permissions:
       actions: read
       contents: read
       security-events: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          token: ${{ github.token }}
           submodules: recursive
 
       - name: Install Java
@@ -112,12 +107,15 @@ jobs:
   # - Deploy pushes to main to dev env
   # - Tags go to prod
   Deploy:
-    name: Prod
-    runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
     needs:
       - Build
       - Analyze
+    environment: Production
+    permissions:
+      id-token: write
+      contents: write
     env:
       ENVIRONMENT: prod
     steps:
@@ -131,7 +129,6 @@ jobs:
             template.yml
             samconfig.toml
           sparse-checkout-cone-mode: false
-
 
       - name: Install SAM CLI
         uses: aws-actions/setup-sam@v2
