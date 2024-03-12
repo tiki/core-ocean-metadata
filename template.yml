@@ -68,7 +68,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              - !Sub "${AWS::AccountId}"
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
             Action:
               - sqs:ChangeMessageVisibility
               - sqs:DeleteMessage
@@ -103,7 +103,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              - !Sub "${AWS::AccountId}"
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
             Action:
               - sqs:ChangeMessageVisibility
               - sqs:DeleteMessage
@@ -130,7 +130,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              - !Sub "${AWS::AccountId}"
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
             Action:
               - sqs:ChangeMessageVisibility
               - sqs:DeleteMessage
