@@ -18,17 +18,35 @@ no_execute_changeset = true
 lint = true
 
 [prod.global.parameters]
+stack_name = "core-ocean-metadata-function"
 region = "us-east-2"
 s3_bucket = "mytiki-sam-deploy"
 s3_prefix = "core/ocean/metadata/function"
 
+[prod.validate.parameters]
+lint = true
+
 [prod.deploy.parameters]
+cached = true
+capabilities = ["CAPABILITY_IAM", "CAPABILITY_AUTO_EXPAND"]
+disable_rollback = true
+parallel = true
 no_execute_changeset = false
+no_fail_on_empty_changeset = true
 
 [dev.global.parameters]
+stack_name = "core-ocean-metadata-function"
 region = "us-east-2"
 s3_bucket = "mytiki-sam-deploy-CREATE-DEV-BUCKET"
 s3_prefix = "core/ocean/metadata/function"
 
+[dev.validate.parameters]
+lint = true
+
 [dev.deploy.parameters]
+cached = true
+capabilities = ["CAPABILITY_IAM", "CAPABILITY_AUTO_EXPAND"]
+disable_rollback = true
+parallel = true
 no_execute_changeset = false
+no_fail_on_empty_changeset = true
