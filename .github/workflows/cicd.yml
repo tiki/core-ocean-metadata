@@ -126,9 +126,9 @@ jobs:
         with:
           fetch-depth: 1
           submodules: false
-          sparse_checkout: |
+          sparse-checkout: |
             Makefile
-          sparse_checkout_cone_mode: false
+          sparse-checkout-cone-mode: false
 
       - name: Install SAM CLI
         uses: aws-actions/setup-sam@v2
