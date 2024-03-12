@@ -12,9 +12,6 @@ lint: lint-code lint-infra
 .PHONY: build
 build: build-code build-infra
 
-.PHONY: deploy
-deploy: deploy-code deploy-infra
-
 .PHONY: lint-code
 lint-code:
 	@echo "No Java linter configured yet"
