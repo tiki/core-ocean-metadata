@@ -121,27 +121,6 @@ Resources:
       QueueName: !Sub "${FunctionName}-function-DLQ"
       MessageRetentionPeriod: 604800
 
-  FunctionDeadLetterQueuePolicy:
-    Type: AWS::SQS::QueuePolicy
-    Properties:
-      Queues:
-        - !Ref FunctionDeadLetterQueue
-      PolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
-            Action:
-              - sqs:ChangeMessageVisibility
-              - sqs:DeleteMessage
-              - sqs:GetQueueAttributes
-              - sqs:GetQueueUrl
-              - sqs:ListQueueTags
-              - sqs:ReceiveMessage
-              - sqs:SendMessage
-            Resource:
-              - !GetAtt FunctionDeadLetterQueue.Arn
-
   Function:
     Type: AWS::Serverless::Function
     Properties:
@@ -159,10 +138,10 @@ Resources:
       MemorySize: !Ref FunctionMemorySize
       Timeout: !Ref FunctionTimeout
       Tracing: Active
-      AutoPublishAlias: latest
-      AutoPublishAliasAllProperties: false
-      SnapStart:
-        ApplyOn: PublishedVersions
+      # AutoPublishAlias: latest
+      # AutoPublishAliasAllProperties: false
+      # SnapStart:
+      #   ApplyOn: PublishedVersions
       LoggingConfig:
         LogFormat: JSON
         ApplicationLogLevel: TRACE
