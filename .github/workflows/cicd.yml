@@ -128,6 +128,8 @@ jobs:
           submodules: false
           sparse-checkout: |
             Makefile
+            template.yml
+            samconfig.toml
           sparse-checkout-cone-mode: false
 
       - name: Install SAM CLI
